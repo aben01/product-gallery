@@ -51,7 +51,8 @@ class App {
             // 注册Service Worker
             if ('serviceWorker' in navigator) {
                 try {
-                    const registration = await navigator.serviceWorker.register('/service-worker.js');
+                    // 使用相对路径以适配子目录托管
+                    const registration = await navigator.serviceWorker.register('service-worker.js');
                     console.log('[App] Service Worker 注册成功');
 
                     // 监听更新
@@ -77,12 +78,12 @@ class App {
                         this.showUpdatePrompt(registration);
                     }
                 } catch (error) {
-                    console.log('[App] Service Worker 注册失败:', error);
+                    console.error('[App] Service Worker 注册失败:', error);
                 }
             }
 
             // 追踪版本并提示更新成功
-            const currentVersion = '1.1.1';
+            const currentVersion = '1.1.2'; // 升级版本号以触发提示
             const lastVersion = localStorage.getItem('app_version');
             if (lastVersion && lastVersion !== currentVersion) {
                 showToast(`应用已升级至 v${currentVersion}`);
@@ -170,18 +171,29 @@ class App {
             showToast('正在检查更新...');
             const registration = await navigator.serviceWorker.getRegistration();
             if (registration) {
+                console.log('[App] 正在请求 Service Worker 更新...');
                 // 强制 SW 去服务器拉取最新的 service-worker.js
                 await registration.update();
 
-                // 如果发现有 waiting 的，onupdatefound 或 registration.waiting 会触发 showUpdatePrompt
-                // 我们稍微延迟检查状态，如果状态没变，说明是最新版
+                // 立即检查是否有等待安装或正在安装的
+                if (registration.waiting || registration.installing) {
+                    console.log('[App] 检查到更新正在处理中');
+                    if (registration.waiting) {
+                        this.showUpdatePrompt(registration);
+                    }
+                    return;
+                }
+
+                // 稍微延迟检查，等待 update() 的异步过程
                 setTimeout(() => {
                     if (!registration.waiting && !registration.installing) {
                         showToast('当前已是最新版本');
+                        console.log('[App] 未发现新版本');
                     }
-                }, 1500);
+                }, 2000);
             } else {
-                showToast('未发现新版本');
+                console.log('[App] 未找到已注册的 Service Worker，尝试注册...');
+                window.location.reload(); // 尝试刷新以让初始化逻辑重新注册
             }
         } catch (error) {
             console.error('[App] 检查更新失败:', error);

@@ -2,7 +2,7 @@
   "name": "产品图库管理系统",
   "short_name": "产品图库",
   "description": "移动端产品图库管理工具",
-  "start_url": "/index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#F2F2F7",
   "theme_color": "#007AFF",
@@ -31,7 +31,10 @@
       "type": "image/png"
     }
   ],
-  "categories": ["productivity", "utilities"],
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
   "lang": "zh-CN",
   "dir": "ltr"
 }
