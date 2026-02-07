@@ -181,7 +181,7 @@ class App {
                     }
                 }, 1500);
             } else {
-                showToast('未发现已注册的服务控制');
+                showToast('未发现新版本');
             }
         } catch (error) {
             console.error('[App] 检查更新失败:', error);
