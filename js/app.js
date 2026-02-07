@@ -51,10 +51,33 @@ class App {
             // 注册Service Worker
             if ('serviceWorker' in navigator) {
                 try {
-                    await navigator.serviceWorker.register('/service-worker.js');
-                    console.log('Service Worker注册成功');
+                    const registration = await navigator.serviceWorker.register('/service-worker.js');
+                    console.log('[App] Service Worker 注册成功');
+
+                    // 监听更新
+                    registration.onupdatefound = () => {
+                        const installingWorker = registration.installing;
+                        console.log('[App] 发现 Service Worker 新版本正在安装...');
+
+                        installingWorker.onstatechange = () => {
+                            if (installingWorker.state === 'installed') {
+                                if (navigator.serviceWorker.controller) {
+                                    console.log('[App] 新版本已安装并准备就绪（等待激活）');
+                                    this.showUpdatePrompt(registration);
+                                } else {
+                                    console.log('[App] 首次安装完成，内容已缓存');
+                                }
+                            }
+                        };
+                    };
+
+                    // 处理已经处于等待状态的更新
+                    if (registration.waiting) {
+                        console.log('[App] 发现已有新版本在后台等待激活');
+                        this.showUpdatePrompt(registration);
+                    }
                 } catch (error) {
-                    console.log('Service Worker注册失败:', error);
+                    console.log('[App] Service Worker 注册失败:', error);
                 }
             }
 
