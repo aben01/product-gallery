@@ -101,6 +101,27 @@ class App {
             check.style.display = 'block';
         }
     }
+
+    showUpdatePrompt(registration) {
+        showConfirm(
+            '发现新版本',
+            '应用有新版本可用，是否立即更新并重启应用？',
+            () => {
+                if (registration.waiting) {
+                    console.log('[App] 正在发送 SKIP_WAITING 指令...');
+                    registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+
+                    // 只有当新 Service Worker 接管后才刷新
+                    navigator.serviceWorker.addEventListener('controllerchange', () => {
+                        console.log('[App] 控制权已变更，应用即将重启...');
+                        window.location.reload();
+                    });
+                } else {
+                    window.location.reload();
+                }
+            }
+        );
+    }
 }
 
 // 创建应用实例

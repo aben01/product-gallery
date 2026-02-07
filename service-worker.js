@@ -1,6 +1,7 @@
 // Service Worker - 离线缓存
+const VERSION = '1.0.1'; // 每次发布新版本时修改此处
+const CACHE_NAME = `product-gallery-${VERSION}`;
 
-const CACHE_NAME = 'product-gallery-v1';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -11,6 +12,7 @@ const urlsToCache = [
     '/css/components.css',
     '/css/pages.css',
     '/css/animations.css',
+    '/css/compatibility.css',
     '/js/utils.js',
     '/js/db.js',
     '/js/image.js',
@@ -26,38 +28,37 @@ const urlsToCache = [
 
 // 安装Service Worker
 self.addEventListener('install', (event) => {
-    console.log('[Service Worker] 安装中...');
+    console.log(`[Service Worker ${VERSION}] 安装中...`);
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
-                console.log('[Service Worker] 缓存文件');
+                console.log(`[Service Worker ${VERSION}] 正在缓存基础文件`);
                 return cache.addAll(urlsToCache);
             })
             .then(() => {
-                console.log('[Service Worker] 安装完成');
-                return self.skipWaiting();
+                console.log(`[Service Worker ${VERSION}] 安装并缓存完成`);
             })
             .catch((error) => {
-                console.error('[Service Worker] 缓存失败:', error);
+                console.error(`[Service Worker ${VERSION}] 缓存失败:`, error);
             })
     );
 });
 
 // 激活Service Worker
 self.addEventListener('activate', (event) => {
-    console.log('[Service Worker] 激活中...');
+    console.log(`[Service Worker ${VERSION}] 激活中...`);
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cacheName) => {
                     if (cacheName !== CACHE_NAME) {
-                        console.log('[Service Worker] 删除旧缓存:', cacheName);
+                        console.log(`[Service Worker ${VERSION}] 删除旧缓存:`, cacheName);
                         return caches.delete(cacheName);
                     }
                 })
             );
         }).then(() => {
-            console.log('[Service Worker] 激活完成');
+            console.log(`[Service Worker ${VERSION}] 激活完成，开始接管客户端`);
             return self.clients.claim();
         })
     );
@@ -65,7 +66,6 @@ self.addEventListener('activate', (event) => {
 
 // 拦截请求
 self.addEventListener('fetch', (event) => {
-    // 只缓存同源请求
     if (!event.request.url.startsWith(self.location.origin)) {
         return;
     }
@@ -73,22 +73,16 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request)
             .then((response) => {
-                // 缓存命中，返回缓存
                 if (response) {
                     return response;
                 }
 
-                // 未命中，发起网络请求
                 return fetch(event.request).then((response) => {
-                    // 检查是否有效响应
                     if (!response || response.status !== 200 || response.type !== 'basic') {
                         return response;
                     }
 
-                    // 克隆响应
                     const responseToCache = response.clone();
-
-                    // 缓存响应
                     caches.open(CACHE_NAME)
                         .then((cache) => {
                             cache.put(event.request, responseToCache);
@@ -98,8 +92,15 @@ self.addEventListener('fetch', (event) => {
                 });
             })
             .catch(() => {
-                // 网络和缓存都失败，返回离线页面
-                console.log('[Service Worker] 离线模式');
+                console.log(`[Service Worker ${VERSION}] 离线模式且无缓存`);
             })
     );
+});
+
+// 监听消息，用于应用内更新
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        console.log(`[Service Worker ${VERSION}] 收到跳过等待指令，准备更新...`);
+        self.skipWaiting();
+    }
 });
