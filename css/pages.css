@@ -6,7 +6,7 @@
 }
 
 #products-container {
-    padding: 0 var(--spacing-lg) var(--spacing-lg);
+    padding: 0 var(--spacing-lg) 120px;
 }
 
 #product-list {
@@ -27,5 +27,5 @@
 
 /* ========== 设置页面 ========== */
 #page-settings .content-container {
-    padding-bottom: var(--spacing-xxxl);
+    padding-bottom: 120px;
 }

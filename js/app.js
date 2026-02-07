@@ -82,7 +82,7 @@ class App {
             }
 
             // 追踪版本并提示更新成功
-            const currentVersion = '1.1.0';
+            const currentVersion = '1.1.1';
             const lastVersion = localStorage.getItem('app_version');
             if (lastVersion && lastVersion !== currentVersion) {
                 showToast(`应用已升级至 v${currentVersion}`);
