@@ -202,7 +202,7 @@ let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    console.log('PWA安装提示已准备');
+    console.log('PWA安装提示已准备。。。');
 
     // 可以在这里显示自定义的安装提示
     // showToast('可以添加到主屏幕');
