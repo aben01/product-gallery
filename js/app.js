@@ -76,18 +76,23 @@ class App {
                         console.log('[App] 发现已有新版本在后台等待激活');
                         this.showUpdatePrompt(registration);
                     }
-
-                    // 页面恢复焦点时主动检查更新
-                    document.addEventListener('visibilitychange', () => {
-                        if (!document.hidden) {
-                            console.log('[App] 页面可见，主动检查更新...');
-                            registration.update().catch(err => console.log('[App] 检查更新失败:', err));
-                        }
-                    });
-
                 } catch (error) {
                     console.log('[App] Service Worker 注册失败:', error);
                 }
+            }
+
+            // 追踪版本并提示更新成功
+            const currentVersion = '1.1.0';
+            const lastVersion = localStorage.getItem('app_version');
+            if (lastVersion && lastVersion !== currentVersion) {
+                showToast(`应用已升级至 v${currentVersion}`);
+            }
+            localStorage.setItem('app_version', currentVersion);
+
+            // 检查更新按钮
+            const btnCheckUpdate = document.getElementById('btn-check-update');
+            if (btnCheckUpdate) {
+                btnCheckUpdate.addEventListener('click', () => this.checkForUpdates());
             }
 
             // 初始化主题
@@ -153,6 +158,35 @@ class App {
                 }
             }
         );
+    }
+
+    async checkForUpdates() {
+        if (!('serviceWorker' in navigator)) {
+            showToast('当前环境不支持检查更新');
+            return;
+        }
+
+        try {
+            showToast('正在检查更新...');
+            const registration = await navigator.serviceWorker.getRegistration();
+            if (registration) {
+                // 强制 SW 去服务器拉取最新的 service-worker.js
+                await registration.update();
+
+                // 如果发现有 waiting 的，onupdatefound 或 registration.waiting 会触发 showUpdatePrompt
+                // 我们稍微延迟检查状态，如果状态没变，说明是最新版
+                setTimeout(() => {
+                    if (!registration.waiting && !registration.installing) {
+                        showToast('当前已是最新版本');
+                    }
+                }, 1500);
+            } else {
+                showToast('未发现已注册的服务控制');
+            }
+        } catch (error) {
+            console.error('[App] 检查更新失败:', error);
+            showToast('检查更新失败，请稍后重试');
+        }
     }
 }
 
