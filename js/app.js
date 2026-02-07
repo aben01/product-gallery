@@ -76,6 +76,15 @@ class App {
                         console.log('[App] 发现已有新版本在后台等待激活');
                         this.showUpdatePrompt(registration);
                     }
+
+                    // 页面恢复焦点时主动检查更新
+                    document.addEventListener('visibilitychange', () => {
+                        if (!document.hidden) {
+                            console.log('[App] 页面可见，主动检查更新...');
+                            registration.update().catch(err => console.log('[App] 检查更新失败:', err));
+                        }
+                    });
+
                 } catch (error) {
                     console.log('[App] Service Worker 注册失败:', error);
                 }
