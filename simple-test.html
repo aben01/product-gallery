@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>极简测试</title>
+</head>
+
+<body>
+    <h2>极简IndexedDB测试</h2>
+    <button onclick="test1()">测试1: 只保存文本数据</button><br><br>
+    <button onclick="test2()">测试2: 保存带Blob的数据</button><br><br>
+    <button onclick="clearDB()">清除数据库</button>
+    <div id="result" style="margin-top: 20px; padding: 15px; border: 1px solid #ccc;"></div>
+
+    <script>
+        let db = null;
+
+        // 初始化
+        async function init() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('TestDB', 1);
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve();
+                };
+                request.onupgradeneeded = (e) => {
+                    const database = e.target.result;
+                    if (!database.objectStoreNames.contains('products')) {
+                        database.createObjectStore('products', { keyPath: 'productCode' });
+                    }
+                };
+            });
+        }
+
+        // 测试1: 只保存简单文本
+        async function test1() {
+            try {
+                if (!db) await init();
+
+                const product = {
+                    productCode: 'TEST001',
+                    createdAt: Date.now(),
+                    data: 'some text'
+                };
+
+                console.log('测试1 - 保存对象:', product);
+
+                const tx = db.transaction(['products'], 'readwrite');
+                const store = tx.objectStore('products');
+                const req = store.put(product);
+
+                req.onsuccess = () => {
+                    document.getElementById('result').innerHTML = '✅ 测试1成功！文本数据保存成功';
+                    console.log('测试1成功');
+                };
+
+                req.onerror = () => {
+                    document.getElementById('result').innerHTML = '❌ 测试1失败: ' + req.error.message;
+                    console.error('测试1失败:', req.error);
+                };
+
+            } catch (error) {
+                document.getElementById('result').innerHTML = '❌ 测试1错误: ' + error.message;
+                console.error('测试1错误:', error);
+            }
+        }
+
+        // 测试2: 保存带Blob的数据
+        async function test2() {
+            try {
+                if (!db) await init();
+
+                // 创建一个简单的Blob
+                const blob = new Blob(['hello world'], { type: 'text/plain' });
+
+                const product = {
+                    productCode: 'TEST002',
+                    createdAt: Date.now(),
+                    images: [{
+                        id: '1',
+                        blob: blob,
+                        filename: 'test.txt'
+                    }]
+                };
+
+                console.log('测试2 - 保存对象:', product);
+                console.log('productCode:', product.productCode);
+                console.log('has productCode:', 'productCode' in product);
+
+                const tx = db.transaction(['products'], 'readwrite');
+                const store = tx.objectStore('products');
+                const req = store.put(product);
+
+                req.onsuccess = () => {
+                    document.getElementById('result').innerHTML = '✅ 测试2成功！带Blob的数据保存成功';
+                    console.log('测试2成功');
+                };
+
+                req.onerror = () => {
+                    document.getElementById('result').innerHTML = '❌ 测试2失败: ' + req.error.message;
+                    console.error('测试2失败:', req.error);
+                };
+
+            } catch (error) {
+                document.getElementById('result').innerHTML = '❌ 测试2错误: ' + error.message;
+                console.error('测试2错误:', error);
+            }
+        }
+
+        function clearDB() {
+            if (db) db.close();
+            indexedDB.deleteDatabase('TestDB').onsuccess = () => {
+                db = null;
+                document.getElementById('result').innerHTML = '✅ 数据库已清除';
+                console.log('数据库已清除');
+            };
+        }
+
+        // 自动初始化
+        init().then(() => {
+            console.log('数据库初始化完成');
+        });
+    </script>
+</body>
+
+</html>

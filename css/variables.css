@@ -1,0 +1,150 @@
+/* CSS变量系统 - 颜色、字体、间距等 */
+
+:root {
+    /* ========== 颜色系统 ========== */
+
+    /* 主色调 - 渐变蓝紫 */
+    --color-primary: #007AFF;
+    --color-primary-dark: #0051D5;
+    --color-primary-gradient: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+
+    /* 背景色 */
+    --color-bg-primary: #F2F2F7;
+    --color-bg-secondary: #FFFFFF;
+    --color-bg-tertiary: #F9F9F9;
+
+    /* 毛玻璃效果 */
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+    /* 文字颜色 */
+    --color-text-primary: #000000;
+    --color-text-secondary: #8E8E93;
+    --color-text-tertiary: #C7C7CC;
+
+    /* 分割线 */
+    --color-divider: #C6C6C8;
+    --color-divider-light: #E5E5EA;
+
+    /* 状态颜色 */
+    --color-success: #34C759;
+    --color-warning: #FF9500;
+    --color-danger: #FF3B30;
+    --color-info: #5AC8FA;
+
+    /* 覆盖层 */
+    --overlay-dark: rgba(0, 0, 0, 0.5);
+    --overlay-light: rgba(0, 0, 0, 0.2);
+
+    /* ========== 字体系统 ========== */
+    --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+
+    --font-size-xs: 11px;
+    --font-size-sm: 13px;
+    --font-size-base: 15px;
+    --font-size-lg: 17px;
+    --font-size-xl: 20px;
+    --font-size-xxl: 28px;
+
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    /* ========== 间距系统 ========== */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 20px;
+    --spacing-xxl: 24px;
+    --spacing-xxxl: 32px;
+
+    /* ========== 圆角 ========== */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+
+    /* ========== 阴影 ========== */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.12);
+
+    /* ========== 布局尺寸 ========== */
+    --navbar-height: 44px;
+    --tabbar-height: 50px;
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-left: env(safe-area-inset-left, 0px);
+    --safe-area-right: env(safe-area-inset-right, 0px);
+
+    /* ========== 动画时长 ========== */
+    --transition-fast: 150ms;
+    --transition-base: 250ms;
+    --transition-slow: 350ms;
+
+    /* ========== 动画曲线 ========== */
+    --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* 深色模式 - 强制 */
+:root[data-theme="dark"] {
+    /* 背景色 */
+    --color-bg-primary: #000000;
+    --color-bg-secondary: #1C1C1E;
+    --color-bg-tertiary: #2C2C2E;
+
+    /* 毛玻璃效果 */
+    --glass-bg: rgba(28, 28, 30, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+    /* 文字颜色 */
+    --color-text-primary: #FFFFFF;
+    --color-text-secondary: #8E8E93;
+    --color-text-tertiary: #636366;
+
+    /* 分割线 */
+    --color-divider: #38383A;
+    --color-divider-light: #2C2C2E;
+
+    /* 主色调（深色模式下更亮） */
+    --color-primary: #0A84FF;
+    --color-primary-dark: #0066CC;
+    --color-primary-gradient: linear-gradient(135deg, #0A84FF 0%, #5E5CE6 100%);
+}
+
+/* 深色模式 - 系统跟随（未强制浅色时） */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        /* 背景色 */
+        --color-bg-primary: #000000;
+        --color-bg-secondary: #1C1C1E;
+        --color-bg-tertiary: #2C2C2E;
+
+        /* 毛玻璃效果 */
+        --glass-bg: rgba(28, 28, 30, 0.8);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+        /* 文字颜色 */
+        --color-text-primary: #FFFFFF;
+        --color-text-secondary: #8E8E93;
+        --color-text-tertiary: #636366;
+
+        /* 分割线 */
+        --color-divider: #38383A;
+        --color-divider-light: #2C2C2E;
+
+        /* 主色调（深色模式下更亮） */
+        --color-primary: #0A84FF;
+        --color-primary-dark: #0066CC;
+        --color-primary-gradient: linear-gradient(135deg, #0A84FF 0%, #5E5CE6 100%);
+    }
+}

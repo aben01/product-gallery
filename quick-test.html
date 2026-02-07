@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快速测试 - 添加产品</title>
+    <style>
+        body {
+            font-family: -apple-system, sans-serif;
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        input,
+        button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background: #007AFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>快速测试 - 添加产品</h2>
+
+    <input type="text" id="productCode" placeholder="输入产品货号，如: TEST001">
+    <input type="file" id="imageFile" accept="image/*">
+    <button onclick="testSave()">保存测试</button>
+
+    <div id="result"></div>
+
+    <script>
+        let db = null;
+
+        // 初始化数据库
+        async function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('ProductGalleryDB', 1);
+
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve();
+                };
+
+                request.onupgradeneeded = (event) => {
+                    const database = event.target.result;
+                    if (!database.objectStoreNames.contains('products')) {
+                        const objectStore = database.createObjectStore('products', { keyPath: 'productCode' });
+                        objectStore.createIndex('createdAt', 'createdAt', { unique: false });
+                    }
+                };
+            });
+        }
+
+        // 测试保存
+        async function testSave() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'none';
+
+            try {
+                const productCodeInput = document.getElementById('productCode');
+                const productCode = productCodeInput.value.trim();
+                const fileInput = document.getElementById('imageFile');
+
+                console.log('=== 开始测试 ===');
+                console.log('productCodeInput:', productCodeInput);
+                console.log('productCodeInput.value:', productCodeInput.value);
+                console.log('productCode (trimmed):', productCode);
+                console.log('productCode length:', productCode.length);
+                console.log('productCode type:', typeof productCode);
+
+                if (!productCode) {
+                    showResult('请输入产品货号！', false);
+                    return;
+                }
+
+                if (!fileInput.files.length) {
+                    showResult('请选择图片！', false);
+                    return;
+                }
+
+                // 初始化数据库
+                if (!db) {
+                    await initDB();
+                }
+
+                // 读取图片
+                const file = fileInput.files[0];
+                const blob = await file.arrayBuffer().then(buffer => new Blob([buffer], { type: file.type }));
+
+                // 创建产品对象 - 注意：必须显式指定productCode字段
+                const product = {
+                    productCode: String(productCode), // 确保是字符串
+                    createdAt: Date.now(),
+                    images: [{
+                        id: Date.now().toString(),
+                        blob: blob,
+                        filename: file.name,
+                        size: blob.size,
+                        createdAt: Date.now()
+                    }]
+                };
+
+                console.log('=== 产品对象 ===');
+                console.log('product:', product);
+                console.log('product.productCode:', product.productCode);
+                console.log('product.productCode type:', typeof product.productCode);
+                console.log('product.productCode length:', product.productCode?.length);
+                console.log('product has productCode:', 'productCode' in product);
+                console.log('Object.keys(product):', Object.keys(product));
+
+                // 验证productCode确实存在且不为空
+                if (!product.productCode || product.productCode === '') {
+                    showResult('❌ 错误: productCode为空！', false);
+                    return;
+                }
+
+                // 保存到IndexedDB
+                const transaction = db.transaction(['products'], 'readwrite');
+                const objectStore = transaction.objectStore('products');
+
+                console.log('=== IndexedDB操作 ===');
+                console.log('objectStore:', objectStore);
+                console.log('objectStore.keyPath:', objectStore.keyPath);
+
+                const request = objectStore.put(product);
+
+                request.onsuccess = () => {
+                    console.log('✅ 保存成功！');
+                    showResult(`✅ 保存成功！产品: ${productCode}`, true);
+                };
+
+                request.onerror = () => {
+                    console.error('❌ 保存失败:', request.error);
+                    console.error('错误名称:', request.error.name);
+                    console.error('错误信息:', request.error.message);
+                    showResult(`❌ 保存失败: ${request.error.message}`, false);
+                };
+
+            } catch (error) {
+                console.error('❌ catch到的错误:', error);
+                console.error('错误堆栈:', error.stack);
+                showResult(`❌ 错误: ${error.message}`, false);
+            }
+        }
+
+        function showResult(message, isSuccess) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = message;
+            resultDiv.className = isSuccess ? 'success' : 'error';
+            resultDiv.style.display = 'block';
+        }
+
+        // 页面加载时初始化
+        window.addEventListener('load', async () => {
+            try {
+                await initDB();
+                console.log('数据库初始化成功');
+            } catch (error) {
+                console.error('数据库初始化失败:', error);
+                showResult('数据库初始化失败，请检查浏览器设置', false);
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>PayloadContent</key>
+    <array>
+        <dict>
+            <key>FullScreen</key>
+            <true/>
+            <key>IgnoreManifestScope</key>
+            <false/>
+            <key>IsRemovable</key>
+            <true/>
+            <key>Label</key>
+            <string>产品图库</string>
+            <key>PayloadDescription</key>
+            <string>产品图库管理系统 - 移动端产品图片管理工具</string>
+            <key>PayloadDisplayName</key>
+            <string>产品图库 WebClip</string>
+            <key>PayloadIdentifier</key>
+            <string>com.productgallery.webclip.001</string>
+            <key>PayloadType</key>
+            <string>com.apple.webClip.managed</string>
+            <key>PayloadUUID</key>
+            <string>3E1B8F4C-5D9A-4E6B-A2F3-7C8D9E0F1A2B</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>Precomposed</key>
+            <true/>
+            <key>URL</key>
+            <string>https://your-domain.com/product-gallery-ios/index.html</string>
+        </dict>
+    </array>
+    <key>PayloadDisplayName</key>
+    <string>产品图库</string>
+    <key>PayloadIdentifier</key>
+    <string>com.productgallery.profile.001</string>
+    <key>PayloadRemovalDisallowed</key>
+    <false/>
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadUUID</key>
+    <string>2D0C7E3F-4B8A-5C9D-A1E2-6F7G8H9I0J1K</string>
+    <key>PayloadOrganization</key>
+    <string>产品图库管理系统</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+    <key>PayloadDescription</key>
+    <string>安装产品图库管理系统到主屏幕</string>
+</dict>
+</plist>

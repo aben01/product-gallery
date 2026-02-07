@@ -1,0 +1,193 @@
+/* 动画效果 */
+
+/* ========== 淡入动画 ========== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn var(--transition-base) var(--ease-out);
+}
+
+/* ========== 卡片入场动画 ========== */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.product-card {
+    animation: slideInUp var(--transition-base) var(--ease-out) both;
+}
+
+.product-card:nth-child(1) {
+    animation-delay: 0ms;
+}
+
+.product-card:nth-child(2) {
+    animation-delay: 50ms;
+}
+
+.product-card:nth-child(3) {
+    animation-delay: 100ms;
+}
+
+.product-card:nth-child(4) {
+    animation-delay: 150ms;
+}
+
+.product-card:nth-child(5) {
+    animation-delay: 200ms;
+}
+
+.product-card:nth-child(6) {
+    animation-delay: 250ms;
+}
+
+/* ========== 弹性按下动画 ========== */
+@keyframes bouncePress {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(0.96);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.bounce-press:active {
+    animation: bouncePress 0.3s var(--ease-bounce);
+}
+
+/* ========== 脉冲动画 ========== */
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.pulse {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* ========== 骨架屏动画 ========== */
+@keyframes shimmer {
+    0% {
+        background-position: -200px 0;
+    }
+
+    100% {
+        background-position: 200px 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(90deg,
+            var(--color-bg-tertiary) 0px,
+            var(--color-divider-light) 40px,
+            var(--color-bg-tertiary) 80px);
+    background-size: 200px 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* ========== 旋转动画 ========== */
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.rotate {
+    animation: rotate 1s linear infinite;
+}
+
+/* ========== 震动反馈动画 ========== */
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: translateX(-5px);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: translateX(5px);
+    }
+}
+
+.shake {
+    animation: shake 0.5s;
+}
+
+/* ========== 缩放进入动画 ========== */
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.zoom-in {
+    animation: zoomIn var(--transition-base) var(--ease-out);
+}
+
+/* ========== 渐变背景动画 ========== */
+@keyframes gradientShift {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+.animated-gradient {
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+}

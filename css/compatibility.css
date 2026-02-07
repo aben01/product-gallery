@@ -1,0 +1,60 @@
+/* 
+ * iOS 12 兼容性补丁
+ * Safari 12 不支持 Flexbox 的 gap 属性，我们需要使用 margin 代替
+ * 此文件将重置所有 Flex 容器的 gap，并使用 margin 来实现间距
+ */
+
+/* 重置 gap */
+.navbar-btn,
+.navbar-actions,
+.tab-item,
+.product-card,
+.product-card-info,
+.image-upload-buttons,
+.upload-btn,
+.image-viewer-bottombar,
+.viewer-action-btn {
+    gap: 0 !important;
+    /*覆盖原有的 gap*/
+}
+
+/* ========== 导航栏 ========== */
+.navbar-btn>*:not(:last-child) {
+    margin-right: var(--spacing-xs);
+}
+
+.navbar-actions>*:not(:last-child) {
+    margin-right: var(--spacing-md);
+}
+
+/* ========== 标签栏 ========== */
+.tab-item>*:not(:last-child) {
+    margin-bottom: 4px;
+}
+
+/* ========== 产品卡片 ========== */
+.product-card>*:not(:last-child) {
+    margin-right: var(--spacing-md);
+}
+
+.product-card-info>*:not(:last-child) {
+    margin-bottom: 4px;
+}
+
+/* ========== 表单/上传 ========== */
+.image-upload-buttons>*:not(:last-child) {
+    margin-right: var(--spacing-md);
+}
+
+.upload-btn>*:not(:last-child) {
+    margin-bottom: var(--spacing-sm);
+}
+
+/* ========== 图片查看器 ========== */
+.image-viewer-bottombar>*:not(:last-child) {
+    margin-right: var(--spacing-xxxl);
+}
+
+.viewer-action-btn>*:not(:last-child) {
+    margin-bottom: 4px;
+}
