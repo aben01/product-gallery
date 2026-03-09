@@ -1,5 +1,5 @@
 // Service Worker - 离线缓存
-const VERSION = '1.1.2'; // 每次部署更新时，请务必修改此版本号
+const VERSION = '1.1.3'; // 每次部署更新时，请务必修改此版本号
 const CACHE_NAME = `product-gallery-${VERSION}`;
 
 const urlsToCache = [

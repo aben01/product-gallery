@@ -115,7 +115,9 @@
             <div class="content-container">
                 <div class="form-group">
                     <label for="input-product-code">产品货号</label>
-                    <input type="text" id="input-product-code" class="input-field" placeholder="请输入产品货号">
+                    <input type="text" id="input-product-code" class="input-field" placeholder="请输入产品货号"
+                        list="product-code-list">
+                    <datalist id="product-code-list"></datalist>
                 </div>
 
                 <div class="form-group">
@@ -149,6 +151,20 @@
                     <div class="image-preview-grid" id="image-preview-grid">
                         <!-- 图片预览将通过JavaScript动态生成 -->
                     </div>
+
+                    <div id="drop-zone" class="drop-zone"
+                        style="margin-top: 24px; border: 2px dashed var(--color-divider); border-radius: var(--radius-md); padding: 40px; text-align: center; color: var(--color-text-secondary); cursor: pointer; transition: all var(--transition-fast); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" style="margin-bottom: 12px; color: var(--color-primary); opacity: 0.8;">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p
+                            style="font-size: 16px; font-weight: 500; margin-bottom: 4px; color: var(--color-text-primary);">
+                            将图片拖拽到此处上传</p>
+                        <p style="font-size: 13px; opacity: 0.6;">支持拖拽多张图片</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -163,15 +179,79 @@
                     返回
                 </button>
                 <h1 class="navbar-title" id="detail-product-code"></h1>
-                <button class="icon-btn danger" id="btn-delete-product" aria-label="删除产品">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    </svg>
-                </button>
+                <div class="navbar-actions">
+                    <button class="navbar-btn" id="btn-detail-edit" style="margin-right: 4px;">编辑</button>
+                    <button class="navbar-btn" id="btn-detail-cancel"
+                        style="margin-right: 4px; display: none;">取消</button>
+                    <button class="icon-btn" id="btn-detail-add" aria-label="添加图片">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button>
+                    <button class="icon-btn danger" id="btn-delete-product" aria-label="删除产品">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                        </svg>
+                    </button>
+                    <button class="icon-btn danger" id="btn-detail-delete-multiple" aria-label="删除选中图片"
+                        style="display: none;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
             </nav>
 
             <div class="content-container" id="detail-images-container">
+                <!-- 详情页：追加图片区域 (隐藏，点击+时弹出或展开) -->
+                <div id="detail-add-zone" style="display: none; margin-bottom: 24px;">
+                    <h3 style="margin-bottom: 12px; font-size: 16px; font-weight: 500;">添加新图片</h3>
+                    <div class="image-upload-buttons">
+                        <label for="detail-file-camera" class="upload-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
+                                </path>
+                                <circle cx="12" cy="13" r="4"></circle>
+                            </svg>
+                            拍照
+                        </label>
+                        <input type="file" id="detail-file-camera" accept="image/*" capture="camera"
+                            style="display: none;" multiple>
+
+                        <label for="detail-file-gallery" class="upload-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            相册
+                        </label>
+                        <input type="file" id="detail-file-gallery" accept="image/*" style="display: none;" multiple>
+                    </div>
+
+                    <div id="detail-drop-zone" class="drop-zone"
+                        style="margin-top: 16px; border: 2px dashed rgba(255, 255, 255, 0.4); border-radius: var(--radius-md); padding: 30px; text-align: center; color: var(--color-text-light); cursor: pointer; background: rgba(255, 255, 255, 0.05); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" style="margin-bottom: 8px; opacity: 0.8;">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p style="font-size: 14px; margin-bottom: 4px; color: var(--color-text);">将图片拖拽到此处</p>
+                    </div>
+                </div>
+
                 <div class="image-grid" id="detail-image-grid">
                     <!-- 图片网格将通过JavaScript动态生成 -->
                 </div>
@@ -262,7 +342,7 @@
                     <div class="settings-item">
                         <div class="settings-item-content">
                             <div class="settings-item-label">版本</div>
-                            <div class="settings-item-desc">1.1.2</div>
+                            <div class="settings-item-desc">1.1.3</div>
                         </div>
                     </div>
                     <div class="settings-item" id="btn-check-update">
@@ -325,6 +405,13 @@
                     <line x1="12" y1="15" x2="12" y2="3"></line>
                 </svg>
                 保存
+            </button>
+            <button class="viewer-action-btn" id="viewer-copy">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+                复制
             </button>
             <button class="viewer-action-btn" id="viewer-share">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

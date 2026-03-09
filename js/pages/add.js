@@ -3,11 +3,80 @@
 let selectedImages = [];
 
 // 初始化添加产品页面
-function initAddPage() {
+async function initAddPage() {
     selectedImages = [];
     document.getElementById('input-product-code').value = '';
     renderImagePreview();
     initAddPageEvents();
+
+    // 加载已有产品货号用于自动补全
+    await loadExistingProductCodes();
+
+    // 初始化拖拽上传
+    initDragAndDrop();
+}
+
+// 加载已有产品货号
+async function loadExistingProductCodes() {
+    try {
+        const products = await db.getAllProducts();
+        const dataList = document.getElementById('product-code-list');
+        // db.getAllProducts() returns objects with productCode
+        dataList.innerHTML = products.map(p => `<option value="${p.productCode}">`).join('');
+    } catch (error) {
+        console.error('加载产品货号失败:', error);
+    }
+}
+
+// 初始化拖动上传
+function initDragAndDrop() {
+    const dropZone = document.getElementById('drop-zone');
+
+    // 阻止默认行为
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    // 高亮拖拽区域
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => {
+            dropZone.style.borderColor = 'var(--color-primary)';
+            dropZone.style.backgroundColor = 'rgba(0, 122, 255, 0.05)';
+        }, false);
+    });
+
+    // 恢复拖拽区域
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => {
+            dropZone.style.borderColor = 'var(--color-border)';
+            dropZone.style.backgroundColor = 'transparent';
+        }, false);
+    });
+
+    // 处理放置
+    dropZone.addEventListener('drop', async (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+
+        if (files && files.length > 0) {
+            // 过滤出图片文件
+            const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+
+            if (imageFiles.length > 0) {
+                // 将数组转为类似 FileList 的对象结构
+                const dataTransfer = new DataTransfer();
+                imageFiles.forEach(file => dataTransfer.items.add(file));
+                await handleImageSelection(dataTransfer.files);
+            } else {
+                showToast('请拖拽图片文件');
+            }
+        }
+    }, false);
 }
 
 // 初始化事件

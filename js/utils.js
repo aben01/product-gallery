@@ -261,3 +261,26 @@ async function shareImage(blob, title = '产品图片') {
         showToast('已下载图片');
     }
 }
+
+// 复制图片到剪贴板
+async function copyImageToClipboard(blob) {
+    if (!navigator.clipboard || !window.ClipboardItem) {
+        showToast('当前浏览器不支持此功能');
+        return;
+    }
+
+    try {
+        // 大多数浏览器要求剪贴板里的图片是 PNG 格式才最稳定
+        // 如果是 jpeg，尝试直接写，失败则提示
+        const data = [new ClipboardItem({ [blob.type]: blob })];
+        await navigator.clipboard.write(data);
+        showToast('图片已复制到剪贴板');
+    } catch (error) {
+        console.error('复制图片失败:', error);
+        if (blob.type !== 'image/png') {
+            showToast('复制失败，请尝试长按图片复制');
+        } else {
+            showToast('复制失败');
+        }
+    }
+}

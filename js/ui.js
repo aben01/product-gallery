@@ -44,6 +44,17 @@ class ImageViewer {
             }
         });
 
+        // 复制按钮
+        const copyBtn = document.getElementById('viewer-copy');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', async () => {
+                const currentImage = this.images[this.currentIndex];
+                if (currentImage && currentImage.blob) {
+                    await copyImageToClipboard(currentImage.blob);
+                }
+            });
+        }
+
         // 双击缩放
         this.image.addEventListener('dblclick', (e) => {
             e.preventDefault();
@@ -232,6 +243,18 @@ function navigateToPage(pageId) {
             page.classList.remove('active');
         }
     });
+
+    // 控制底部导航栏(tabbar)在详情页隐藏
+    const tabbar = document.querySelector('.tabbar');
+    if (tabbar) {
+        if (pageId === 'detail' || pageId === 'add') {
+            // 也可以在添加页面隐藏 (如果需要)
+            // 这里根据用户的描述，只是要求详情页不显示
+            tabbar.style.display = (pageId === 'detail') ? 'none' : 'flex';
+        } else {
+            tabbar.style.display = 'flex';
+        }
+    }
 }
 
 // 切换标签
