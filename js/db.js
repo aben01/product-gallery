@@ -88,7 +88,7 @@ class ProductDB {
     }
 
     // 添加或更新产品
-    async saveProduct(productCode, images) {
+    async saveProduct(productCode, images, replace = false) {
         return new Promise(async (resolve, reject) => {
             try {
                 console.log('=== saveProduct 开始 ===');
@@ -121,12 +121,12 @@ class ProductDB {
                 let productToSave;
 
                 if (existingProduct) {
-                    // 更新现有产品
-                    const combinedImages = existingProduct.images.concat(images);
+                    // 如果 replace 为 true，则直接替换图片列表；否则追加
+                    const updatedImages = replace ? images : existingProduct.images.concat(images);
                     productToSave = {
                         productCode: cleanCode,
                         createdAt: existingProduct.createdAt,
-                        images: combinedImages
+                        images: updatedImages
                     };
                 } else {
                     // 创建新产品

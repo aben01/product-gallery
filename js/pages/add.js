@@ -30,7 +30,11 @@ async function loadExistingProductCodes() {
 
 // 初始化拖动上传
 function initDragAndDrop() {
-    const dropZone = document.getElementById('drop-zone');
+    let dropZone = document.getElementById('drop-zone');
+    // 克隆并替换以清除旧的事件监听器
+    const newDropZone = dropZone.cloneNode(true);
+    dropZone.replaceWith(newDropZone);
+    dropZone = newDropZone;
 
     // 阻止默认行为
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {

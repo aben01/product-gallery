@@ -199,8 +199,10 @@ function initDetailAddImageEvents() {
             const compressedImages = await compressImages(filesArray);
 
             // 将新图片追加到当前产品
-            currentProduct.images = [...currentProduct.images, ...compressedImages];
-            await db.saveProduct(currentProduct.productCode, currentProduct.images);
+            const updatedImages = [...currentProduct.images, ...compressedImages];
+            // 使用 replace=true 确保保存的是我们准确构建的完整图片列表
+            await db.saveProduct(currentProduct.productCode, updatedImages, true);
+            currentProduct.images = updatedImages;
 
             // 重新渲染UI
             renderDetailImages();
@@ -215,17 +217,30 @@ function initDetailAddImageEvents() {
     };
 
     // 拍照和相册
-    document.getElementById('detail-file-camera').addEventListener('change', (e) => {
+    const cameraInput = document.getElementById('detail-file-camera');
+    const galleryInput = document.getElementById('detail-file-gallery');
+
+    // 克隆并替换以清除旧的监听器
+    const newCameraInput = cameraInput.cloneNode(true);
+    const newGalleryInput = galleryInput.cloneNode(true);
+    cameraInput.replaceWith(newCameraInput);
+    galleryInput.replaceWith(newGalleryInput);
+
+    newCameraInput.addEventListener('change', (e) => {
         handleFiles(e.target.files);
         e.target.value = '';
     });
-    document.getElementById('detail-file-gallery').addEventListener('change', (e) => {
+    newGalleryInput.addEventListener('change', (e) => {
         handleFiles(e.target.files);
         e.target.value = '';
     });
 
     // 拖拽
-    const dropZone = document.getElementById('detail-drop-zone');
+    let dropZone = document.getElementById('detail-drop-zone');
+    const newDropZone = dropZone.cloneNode(true);
+    dropZone.replaceWith(newDropZone);
+    dropZone = newDropZone;
+
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => dropZone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); }));
     ['dragenter', 'dragover'].forEach(evt => dropZone.addEventListener(evt, () => dropZone.style.borderColor = 'var(--color-primary)'));
     ['dragleave', 'drop'].forEach(evt => dropZone.addEventListener(evt, () => dropZone.style.borderColor = 'rgba(255, 255, 255, 0.4)'));
@@ -255,8 +270,8 @@ async function deleteSelectedImages() {
             showToast('产品已删除');
             navigateToPage('home');
         } else {
-            // 保存剩余图片
-            await db.saveProduct(currentProduct.productCode, currentProduct.images);
+            // 保存剩余图片，确保使用 replace=true
+            await db.saveProduct(currentProduct.productCode, currentProduct.images, true);
             showToast('删除成功');
             toggleDetailEditMode(); // 退出编辑模式
         }
